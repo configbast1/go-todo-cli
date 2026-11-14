@@ -1,49 +1,49 @@
 # go-todo-cli
 
-Простий консольний список справ на **Go**. Навчальний проєкт: робота з аргументами командного рядка, структурами, слайсами, JSON та файлами.
+A simple console todo list written in **Go**. A learning project covering command-line arguments, structs, slices, JSON and file I/O.
 
-## Можливості
+## Features
 
-- додавання, перегляд, виконання та видалення справ
-- очищення виконаних справ
-- збереження у файл `tasks.json`
-- тільки стандартна бібліотека Go, без сторонніх пакетів
+- add, list, complete and delete tasks
+- clear all completed tasks
+- tasks are saved to `tasks.json`
+- Go standard library only, no third-party packages
 
-## Запуск
+## Usage
 
 ```bash
-go run . add "Вивчити Go"
-go run . add "Зробити ДЗ з Django"
+go run . add "Learn Go"
+go run . add "Finish Django homework"
 go run . list
 go run . done 1
 go run . delete 2
 go run . clear
 ```
 
-Або зібрати програму:
+Or build a binary:
 
 ```bash
 go build -o todo.exe
 ./todo.exe list
 ```
 
-## Приклад
+## Example
 
 ```
 $ todo list
-  1. [x] Вивчити Go  (14.11 20:30)
-  2. [ ] Зробити ДЗ з Django  (14.11 20:31)
+  1. [x] Learn Go  (14.11 20:30)
+  2. [ ] Finish Django homework  (14.11 20:31)
 
-Виконано: 1 з 2
+Done: 1 of 2
 ```
 
-## Що використано
+## What it covers
 
-| Тема | Де в коді |
+| Topic | Where in the code |
 |---|---|
-| структури та JSON-теги | `type Task struct` |
-| робота з файлами | `os.ReadFile`, `os.WriteFile` |
+| structs and JSON tags | `type Task struct` |
+| file I/O | `os.ReadFile`, `os.WriteFile` |
 | JSON | `json.Unmarshal`, `json.MarshalIndent` |
-| слайси | `append`, видалення елемента |
-| обробка помилок | `error`, `fmt.Errorf` |
-| аргументи командного рядка | `os.Args`, `switch` |
+| slices | `append`, removing an element |
+| error handling | `error`, `fmt.Errorf` |
+| command-line arguments | `os.Args`, `switch` |

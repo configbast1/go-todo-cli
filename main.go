@@ -1,5 +1,5 @@
-// go-todo-cli — простий консольний список справ на Go.
-// Дані зберігаються у файлі tasks.json поруч із програмою.
+// go-todo-cli is a simple console todo list written in Go.
+// Tasks are stored in the tasks.json file next to the program.
 package main
 
 import (
@@ -13,7 +13,7 @@ import (
 
 const dataFile = "tasks.json"
 
-// Task — одна справа у списку.
+// Task is a single item in the todo list.
 type Task struct {
 	ID        int       `json:"id"`
 	Title     string    `json:"title"`
@@ -21,7 +21,7 @@ type Task struct {
 	CreatedAt time.Time `json:"created_at"`
 }
 
-// loadTasks читає список справ із файлу (якщо файлу ще немає — повертає порожній список).
+// loadTasks reads the task list from the file (returns an empty list if the file does not exist yet).
 func loadTasks() ([]Task, error) {
 	data, err := os.ReadFile(dataFile)
 	if os.IsNotExist(err) {
@@ -35,7 +35,7 @@ func loadTasks() ([]Task, error) {
 	return tasks, err
 }
 
-// saveTasks записує список справ у файл у гарному (з відступами) JSON.
+// saveTasks writes the task list to the file as pretty-printed JSON.
 func saveTasks(tasks []Task) error {
 	data, err := json.MarshalIndent(tasks, "", "  ")
 	if err != nil {
@@ -44,7 +44,7 @@ func saveTasks(tasks []Task) error {
 	return os.WriteFile(dataFile, data, 0644)
 }
 
-// nextID повертає наступний вільний номер справи.
+// nextID returns the next free task number.
 func nextID(tasks []Task) int {
 	maxID := 0
 	for _, t := range tasks {
@@ -55,7 +55,7 @@ func nextID(tasks []Task) int {
 	return maxID + 1
 }
 
-// findIndex шукає справу за номером і повертає її індекс у слайсі (або -1).
+// findIndex looks up a task by its number and returns its index in the slice (or -1).
 func findIndex(tasks []Task, id int) int {
 	for i, t := range tasks {
 		if t.ID == id {
@@ -66,20 +66,20 @@ func findIndex(tasks []Task, id int) int {
 }
 
 func printHelp() {
-	fmt.Println(`go-todo-cli — список справ у терміналі
+	fmt.Println(`go-todo-cli - a todo list in your terminal
 
-Команди:
-  add <текст>     додати справу
-  list            показати всі справи
-  done <номер>    позначити справу виконаною
-  delete <номер>  видалити справу
-  clear           видалити всі виконані справи
-  help            показати цю довідку`)
+Commands:
+  add <text>      add a task
+  list            show all tasks
+  done <number>   mark a task as done
+  delete <number> delete a task
+  clear           remove all completed tasks
+  help            show this help`)
 }
 
 func printList(tasks []Task) {
 	if len(tasks) == 0 {
-		fmt.Println("Список порожній. Додай справу: todo add \"Купити хліб\"")
+		fmt.Println("The list is empty. Add a task: todo add \"Buy bread\"")
 		return
 	}
 	done := 0
@@ -91,17 +91,17 @@ func printList(tasks []Task) {
 		}
 		fmt.Printf("%3d. %s %s  (%s)\n", t.ID, mark, t.Title, t.CreatedAt.Format("02.01 15:04"))
 	}
-	fmt.Printf("\nВиконано: %d з %d\n", done, len(tasks))
+	fmt.Printf("\nDone: %d of %d\n", done, len(tasks))
 }
 
-// parseID перетворює аргумент командного рядка на номер справи.
+// parseID converts a command-line argument into a task number.
 func parseID(args []string) (int, error) {
 	if len(args) < 1 {
-		return 0, fmt.Errorf("вкажи номер справи")
+		return 0, fmt.Errorf("please specify a task number")
 	}
 	id, err := strconv.Atoi(args[0])
 	if err != nil {
-		return 0, fmt.Errorf("номер має бути числом: %q", args[0])
+		return 0, fmt.Errorf("task number must be a number: %q", args[0])
 	}
 	return id, nil
 }
@@ -114,7 +114,7 @@ func run(args []string) error {
 
 	tasks, err := loadTasks()
 	if err != nil {
-		return fmt.Errorf("не вдалося прочитати %s: %w", dataFile, err)
+		return fmt.Errorf("could not read %s: %w", dataFile, err)
 	}
 
 	command, rest := args[0], args[1:]
@@ -122,11 +122,11 @@ func run(args []string) error {
 	case "add":
 		title := strings.TrimSpace(strings.Join(rest, " "))
 		if title == "" {
-			return fmt.Errorf("напиши текст справи: todo add \"Купити хліб\"")
+			return fmt.Errorf("please write the task text: todo add \"Buy bread\"")
 		}
 		task := Task{ID: nextID(tasks), Title: title, CreatedAt: time.Now()}
 		tasks = append(tasks, task)
-		fmt.Printf("Додано справу #%d: %s\n", task.ID, task.Title)
+		fmt.Printf("Added task #%d: %s\n", task.ID, task.Title)
 
 	case "list":
 		printList(tasks)
@@ -139,10 +139,10 @@ func run(args []string) error {
 		}
 		i := findIndex(tasks, id)
 		if i == -1 {
-			return fmt.Errorf("справу #%d не знайдено", id)
+			return fmt.Errorf("task #%d not found", id)
 		}
 		tasks[i].Done = true
-		fmt.Printf("Справу #%d виконано: %s\n", id, tasks[i].Title)
+		fmt.Printf("Task #%d is done: %s\n", id, tasks[i].Title)
 
 	case "delete":
 		id, err := parseID(rest)
@@ -151,9 +151,9 @@ func run(args []string) error {
 		}
 		i := findIndex(tasks, id)
 		if i == -1 {
-			return fmt.Errorf("справу #%d не знайдено", id)
+			return fmt.Errorf("task #%d not found", id)
 		}
-		fmt.Printf("Видалено справу #%d: %s\n", id, tasks[i].Title)
+		fmt.Printf("Deleted task #%d: %s\n", id, tasks[i].Title)
 		tasks = append(tasks[:i], tasks[i+1:]...)
 
 	case "clear":
@@ -167,14 +167,14 @@ func run(args []string) error {
 			left = append(left, t)
 		}
 		tasks = left
-		fmt.Printf("Видалено виконаних справ: %d\n", removed)
+		fmt.Printf("Removed completed tasks: %d\n", removed)
 
 	case "help", "-h", "--help":
 		printHelp()
 		return nil
 
 	default:
-		return fmt.Errorf("невідома команда %q (дивись: todo help)", command)
+		return fmt.Errorf("unknown command %q (see: todo help)", command)
 	}
 
 	return saveTasks(tasks)
@@ -182,7 +182,7 @@ func run(args []string) error {
 
 func main() {
 	if err := run(os.Args[1:]); err != nil {
-		fmt.Fprintln(os.Stderr, "Помилка:", err)
+		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(1)
 	}
 }
